@@ -51,6 +51,7 @@ typedef struct {
 	janus_id_t senderId;
 	switch_bool_t isPlugin;
 	const char *pSecret;
+	const char *pPin;
 	cJSON *pJsonBody;
 	cJSON *pJsonJsep;
 } message_t;
@@ -551,7 +552,7 @@ janus_id_t apiCreateRoom(const char *pUrl, const char *pSecret, const janus_id_t
   return result;
 }
 
-switch_status_t apiJoin(const char *pUrl, const char *pSecret, const janus_id_t serverId, const janus_id_t senderId, const janus_id_t roomId, const char *pDisplay) {
+switch_status_t apiJoin(const char *pUrl, const char *pSecret, const janus_id_t serverId, const janus_id_t senderId, const janus_id_t roomId, const char *pDisplay, const char *pPin) {
 	message_t request, *pResponse = NULL;
   switch_status_t result = SWITCH_STATUS_SUCCESS;
 
@@ -569,6 +570,7 @@ switch_status_t apiJoin(const char *pUrl, const char *pSecret, const janus_id_t 
 	request.serverId = serverId;
 	request.pTransactionId = pTransactionId;
 	request.pSecret = pSecret;
+    request.pPin = pPin;
 
 	request.pJsonBody = cJSON_CreateObject();
   if (request.pJsonBody == NULL) {
@@ -597,7 +599,16 @@ switch_status_t apiJoin(const char *pUrl, const char *pSecret, const janus_id_t 
     }
   }
 
-	if (!(pJsonRequest = encode(request))) {
+  if (pPin) {
+    if (cJSON_AddStringToObject(request.pJsonBody, "pin", pPin) == NULL) {
+      switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_WARNING, "Cannot create string (body.pin)\n");
+			result = SWITCH_STATUS_FALSE;
+      goto done;
+    }
+  }
+
+
+  if (!(pJsonRequest = encode(request))) {
     switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_WARNING, "Cannot create request\n");
 		result = SWITCH_STATUS_FALSE;
     goto done;

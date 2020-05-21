@@ -116,6 +116,8 @@ struct private_object {
 };
 typedef struct private_object private_t;
 
+char *pin;
+
 #define JANUS_SYNTAX "janus [debug|status|listgw]"
 #define JANUS_DEBUG_SYNTAX "janus debug [true|false]"
 #define	JANUS_GATEWAY_SYNTAX "janus server <name> [enable|disable]"
@@ -533,7 +535,7 @@ static switch_status_t channel_on_routing(switch_core_session_t *session)
 		return SWITCH_STATUS_NOTFOUND;
 	}
 
-	if (apiJoin(pServer->pUrl, pServer->pSecret, tech_pvt->serverId, tech_pvt->senderId, tech_pvt->roomId, tech_pvt->pDisplay) != SWITCH_STATUS_SUCCESS) {
+	if (apiJoin(pServer->pUrl, pServer->pSecret, tech_pvt->serverId, tech_pvt->senderId, tech_pvt->roomId, tech_pvt->pDisplay, pin) != SWITCH_STATUS_SUCCESS) {
 		switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "Failed to join room\n");
 		switch_channel_hangup(channel, SWITCH_CAUSE_INCOMPATIBLE_DESTINATION);
 		return SWITCH_STATUS_FALSE;
@@ -1022,6 +1024,12 @@ static switch_status_t load_config(void)
 			char *pVarStr = (char *) switch_xml_attr_soft(param, "name");
 			char *pValStr = (char *) switch_xml_attr_soft(param, "value");
 			DEBUG(SWITCH_CHANNEL_LOG, "Config  %s->%s\n", pVarStr, pValStr);
+
+
+			if (!strcmp(pVarStr, "pin")) {
+				pin=strdup(pValStr);
+			}
+
 
 			if (!strcmp(pVarStr, "debug")) {
 				globals.debug = switch_true(pValStr);
