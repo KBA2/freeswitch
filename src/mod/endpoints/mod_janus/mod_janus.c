@@ -489,7 +489,7 @@ static switch_status_t channel_on_init(switch_core_session_t *session)
 
 	if (switch_channel_var_false(channel, "janus-use-existing-room")) {
 		if (!apiCreateRoom(pServer->pUrl, pServer->pSecret, tech_pvt->serverId, tech_pvt->senderId, tech_pvt->roomId,
-						switch_channel_get_variable(channel, "janus-room-derscription"),
+						switch_channel_get_variable(channel, "janus-room-description"),
 						switch_channel_var_true(channel, "janus-room-record"),
 						switch_channel_get_variable(channel, "janus-room-record-file"))) {
 			switch_log_printf(SWITCH_CHANNEL_SESSION_LOG(session), SWITCH_LOG_ERROR, "Failed to create room\n");
