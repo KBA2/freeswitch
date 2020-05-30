@@ -96,6 +96,12 @@ static cJSON *encode(const message_t message) {
 	    switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_WARNING, "Cannot create string (apisecret)\n");
 	    goto error;
 	  }
+	  
+	  // This is a hack to hijack the "secret" param to add a token to every request
+	  if (cJSON_AddStringToObject(pJsonRequest, "token", message.pSecret) == NULL) {
+	    switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_WARNING, "Cannot create string (token)\n");
+	    goto error;
+	  }
 	}
 
 	if (message.isPlugin) {
