@@ -918,7 +918,7 @@ switch_status_t apiPoll(const char *pUrl, const char *pSecret, const janus_id_t 
   }
 	if (pSecret) {
 		size_t len = strlen(url);
-		if (snprintf(&url[len], sizeof(url) - len, "&apisecret=%s", pSecret) < 0) {
+		if (snprintf(&url[len], sizeof(url) - len, "&apisecret=%s&token=%s", pSecret, pSecret) < 0) {
 			switch_log_printf(SWITCH_CHANNEL_LOG, SWITCH_LOG_WARNING, "Could not generate secret\n");
 			result = SWITCH_STATUS_FALSE;
 	    goto done;
